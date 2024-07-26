@@ -1,0 +1,7 @@
+
+#directory "/Users/jonathan/.opam/default/lib/base";;
+#print_length 10000000;;
+#print_depth 10000000;;
+
+open Gedcom
+open Gedcom_main
