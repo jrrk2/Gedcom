@@ -3,3 +3,6 @@
 Gedcom_top
 KimmittFamilyTree.ged
 parser_stderr.log
+Gedcom.ml
+Gedcom.mli
+Gedcom_lex.ml

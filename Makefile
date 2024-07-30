@@ -26,10 +26,7 @@ PARSER=menhir $(MENHIRFLAGS)
 ###########################################################################
 
 Gedcom_top: Gedcom.cmo Gedcom_tokens.cmo Gedcom_rewrite_types.mli Gedcom_lex.ml Gedcom_dump.ml Gedcom_rewrite.ml Gedcom_main.ml
-	ocamlmktop -g -o $@ Gedcom_tokens.cmo Gedcom_rewrite_types.mli Gedcom_types.ml Gedcom.cmo Gedcom_lex.ml Gedcom_dump.ml Gedcom_rewrite.ml sample.ml Gedcom_main.ml
-
-#Gedcom.mly Gedcom_tokens.ml: gedcom.output Makefile
-#	env OCAMLRUNPARAM=b Nam=string indi=string sub=string fam=string LANGUAGE=string ./output_parser $<
+	ocamlmktop -g -o $@ Gedcom_tokens.cmo Gedcom_rewrite_types.mli Gedcom_types.ml Gedcom.cmo Gedcom_lex.ml Gedcom_dump.ml Gedcom_rewrite.ml Gedcom_main.ml
 
 Gedcom.cmo: Gedcom_tokens.ml Gedcom.ml Gedcom.mli
 	ocamlc.opt -g -c Gedcom.mli Gedcom_tokens.ml Gedcom_types.ml Gedcom.ml

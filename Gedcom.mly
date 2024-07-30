@@ -74,11 +74,6 @@
 %token  DATA
 %token  HEAD
 %token  SUBN
-%token <token> CONS1
-%token <token*token> CONS2
-%token <token*token*token> CONS3
-%token <token*token*token*token> CONS4
-%token <token*token*token*token*token> CONS5
 %token  CORP
 %token  CTRY
 %token  Cont
@@ -92,7 +87,6 @@
 %token  DOT
 %token  DOUBLEQUOTE
 %token  EQUALS
-%token <token list> ELIST
 %token <string> EMAIL
 %token  EMPTY_TOKEN
 %token  END
@@ -148,126 +142,13 @@
 %token  VBAR
 %token  VERS
 %token  WIFE
-%type <token> ml_start
-%start ml_start
+%type <token list> start
+%start start
 %%
 
-ml_start: ASCII_239 ASCII_187 ASCII_191 BODY EOF_TOKEN { TUPLE3(STRING("ml_start1"),$4,EOF_TOKEN) }
+start: ASCII_239 ASCII_187 ASCII_191 BODY EOF_TOKEN { $4 }
 
-Gedcom: INIT Header Body END { TUPLE5(STRING("Gedcom1"),INIT,$2,$3,END) }
-
-cont: Cont continuation { TUPLE3(STRING("cont1"),Cont,$2) }
-	|	/* empty */ { EMPTY_TOKEN }
-
-continuation: CONT cont { TUPLE3(STRING("continuation1"),CONT,$2) }
-	|	CONC cont { TUPLE3(STRING("continuation2"),CONC,$2) }
-
-Header: HeaderLine HeaderLines { TUPLE3(STRING("Header1"),$1,$2) }
-
-HeaderLines: HeaderLine HeaderLines { TUPLE3(STRING("HeaderLines1"),$1,$2) }
-	|	/* empty */ { EMPTY_TOKEN }
-
-HeaderLine: HeaderTag { ($1) }
-
-HeaderTag: SOUR cont SdList { TUPLE4(STRING("HeaderTag1"),SOUR,$2,$3) }
-	|	DEST cont SdList { TUPLE4(STRING("HeaderTag2"),DEST,$2,$3) }
-	|	DATE cont Cont { TUPLE4(STRING("HeaderTag3"),DATE,$2,Cont) }
-	|	FileStruct Cont { TUPLE3(STRING("HeaderTag4"),$1,Cont) }
-	|	SUBM Sub { TUPLE3(STRING("HeaderTag5"),SUBM,Sub) }
-	|	AUTH cont { TUPLE3(STRING("HeaderTag6"),AUTH,$2) }
-	|	GEDC SdList { TUPLE3(STRING("HeaderTag7"),GEDC,$2) }
-
-SdList: Sd SdList { CONS2($1,$2) }
-	|	/* empty */ { EMPTY_TOKEN }
-
-Sd: NAME Nam Cont { TUPLE4(STRING("Sd1"),NAME,Nam $2,Cont) }
-	|	VERS cont Cont { TUPLE4(STRING("Sd2"),VERS,$2,Cont) }
-	|	CORP cont Cont CorpList { TUPLE5(STRING("Sd3"),CORP,$2,Cont,$4) }
-	|	FORM cont { TUPLE3(STRING("Sd4"),FORM,$2) }
-
-CorpList: Corp Cont CorpList { CONS3($1,Cont,$3) }
-	|	/* empty */ { EMPTY_TOKEN }
-
-Corp: ADDR cont { TUPLE3(STRING("Corp1"),ADDR,$2) }
-	|	PHON cont { TUPLE3(STRING("Corp2"),PHON,$2) }
-
-FileStruct: FIL cont { TUPLE3(STRING("FileStruct1"),FIL,$2) }
-	|	CHAR cont { TUPLE3(STRING("FileStruct2"),CHAR,$2) }
-	|	LANGUAGE cont { TUPLE3(STRING("FileStruct3"),LANGUAGE $1,$2) }
-
-Body: BodyLine BodyList { TUPLE3(STRING("Body1"),$1,$2) }
-
-BodyList: BodyLine BodyList { CONS2($1,$2) }
-	|	/* empty */ { EMPTY_TOKEN }
-
-BodyLine: TagId { ($1) }
-
-Tags: Tag TagList { TUPLE3(STRING("Tags1"),$1,$2) }
-
-TagList: Tag TagList { CONS2($1,$2) }
-	|	/* empty */ { EMPTY_TOKEN }
-
-Tag: ContextlessTag Cont { TUPLE3(STRING("Tag1"),$1,Cont) }
-	|	Event { ($1) }
-
-ContextlessTag: NAME Nam { TUPLE3(STRING("ContextlessTag1"),NAME,Nam $2) }
-	|	TITL cont { TUPLE3(STRING("ContextlessTag2"),TITL,$2) }
-	|	NATI cont { TUPLE3(STRING("ContextlessTag3"),NATI,$2) }
-	|	NOTE cont { TUPLE3(STRING("ContextlessTag4"),NOTE,$2) }
-	|	NATU cont { TUPLE3(STRING("ContextlessTag5"),NATU,$2) }
-	|	ALIA cont { TUPLE3(STRING("ContextlessTag6"),ALIA,$2) }
-	|	EMAIL cont { TUPLE3(STRING("ContextlessTag7"),EMAIL,$2) }
-	|	OCCU cont { TUPLE3(STRING("ContextlessTag8"),OCCU,$2) }
-	|	Famx { ($1) }
-	|	FamElem { ($1) }
-	|	ADDR cont { TUPLE3(STRING("ContextlessTag11"),ADDR,$2) }
-	|	PHON cont { TUPLE3(STRING("ContextlessTag12"),PHON,$2) }
-	|	DEBUG { (DEBUG) }
-	|	DEST cont { TUPLE3(STRING("ContextlessTag14"),DEST,$2) }
-	|	AGE cont { TUPLE3(STRING("ContextlessTag15"),AGE,$2) }
-	|	SEX cont { TUPLE3(STRING("ContextlessTag16"),SEX,$2) }
-
-Famx: FAMS Fam { TUPLE3(STRING("Famx1"),FAMS,Fam) }
-	|	FAMC Fam { TUPLE3(STRING("Famx2"),FAMC,Fam) }
-
-Event: DEAT EventTail { TUPLE3(STRING("Event1"),DEAT,$2) }
-	|	BIRT EventTail { TUPLE3(STRING("Event2"),BIRT,$2) }
-	|	BURI EventTail { TUPLE3(STRING("Event3"),BURI,$2) }
-	|	CHR EventTail { TUPLE3(STRING("Event4"),CHR,$2) }
-	|	BAPL EventTail { TUPLE3(STRING("Event5"),BAPL,$2) }
-	|	BAPM EventTail { TUPLE3(STRING("Event6"),BAPM,$2) }
-	|	BARM EventTail { TUPLE3(STRING("Event7"),BARM,$2) }
-	|	BASM EventTail { TUPLE3(STRING("Event8"),BASM,$2) }
-	|	EVEN cont EventTail { TUPLE4(STRING("Event9"),EVEN,$2,$3) }
-
-EventTail: Param ParamList { TUPLE3(STRING("EventTail1"),$1,$2) }
-
-ParamList: Param ParamList { CONS2($1,$2) }
-	|	/* empty */ { EMPTY_TOKEN }
-
-Param: PLAC cont { TUPLE3(STRING("Param1"),PLAC,$2) }
-	|	CITY cont { TUPLE3(STRING("Param2"),CITY,$2) }
-	|	CTRY cont { TUPLE3(STRING("Param3"),CTRY,$2) }
-	|	DATE cont { TUPLE3(STRING("Param4"),DATE,$2) }
-	|	CAUS cont { TUPLE3(STRING("Param5"),CAUS,$2) }
-
-TagId: Fam Family { TUPLE3(STRING("TagId1"),Fam,$2) }
-	|	INDI Tags { TUPLE3(STRING("TagId2"),INDI,$2) }
-	|	Sub Tags { TUPLE3(STRING("TagId3"),Sub,$2) }
-
-Family: FamElem FamList { TUPLE3(STRING("Family1"),$1,$2) }
-
-FamList: FamElem FamList { CONS2($1,$2) }
-	|	/* empty */ { EMPTY_TOKEN }
-
-FamElem: HUSB INDI { TUPLE3(STRING("FamElem1"),HUSB,INDI) }
-	|	WIFE INDI { TUPLE3(STRING("FamElem2"),WIFE,INDI) }
-	|	CHIL INDI { TUPLE3(STRING("FamElem3"),CHIL,INDI) }
-	|	MARR ParamList { TUPLE3(STRING("FamElem4"),MARR,$2) }
-	|	DIV cont { TUPLE3(STRING("FamElem5"),DIV,$2) }
-	|	ADOP INDI { TUPLE3(STRING("FamElem6"),ADOP,INDI) }
-
-BODY: lev0_lst { TLIST (List.rev $1) }
+BODY: lev0_lst { List.rev $1 }
 
 lev0:
   | HEAD lev1_lst { TUPLE2(HEAD, TLIST (List.rev $2)) }
@@ -301,7 +182,7 @@ lev2:
   | NICK { NICK $1 }
   | SURN { SURN $1 }
   | NSFX STRING { TUPLE2(NSFX, STRING $2) }
-  | UNDERSCORE_KW  { UNDERSCORE_KW $1 }
+  | UNDERSCORE_KW { UNDERSCORE_KW $1 }
   | RIN STRING COLON STRING { TUPLE3(RIN, STRING $2, STRING $4) }
   | NAME { NAME $1 }
   | CORP NAME_OF_BUSINESS { TUPLE2(CORP, $2) }
@@ -352,37 +233,37 @@ lev1:
   | GEDC lev2_lst { TUPLE2(GEDC, TLIST (List.rev $2)) }
   | CHAR CHARACTER_SET { TUPLE2(CHAR, $2) }
   | LANG LANGUAGE_OF_TEXT { TUPLE2(LANG, $2) }
-  | SOUR APPROVED_SYSTEM_ID lev2_lst { SOUR }
-  | SUBM AT XREF AT { SUBM }
-  | DEST RECEIVING_SYSTEM_NAME { DEST }
+  | SOUR APPROVED_SYSTEM_ID lev2_lst { TUPLE3(SOUR, $2, TLIST (List.rev $3)) }
+  | SUBM AT XREF AT { TUPLE2(SUBM, $3) }
+  | DEST RECEIVING_SYSTEM_NAME { TUPLE2(DEST, $2) }
   | DATE lev2_lst { TUPLE2(DATE $1, TLIST (List.rev $2)) }
-  | RINS RINS_LST { RINS }
-  | RIN STRING COLON STRING { RIN }
+  | RINS RINS_LST { TUPLE2(RINS, TLIST (List.rev $2)) }
+  | RIN STRING COLON STRING { TUPLE3(RIN, STRING $2, STRING $4) }
   | NAME lev2_lst { TUPLE2(NAME $1, TLIST (List.rev $2)) }
   | EMAIL { EMAIL $1 }
   | UNDERSCORE_KW { UNDERSCORE_KW $1 }
-  | SEX STRING { SEX }
+  | SEX STRING { TUPLE2(SEX, STRING $2) }
   | BIRT lev2_lst { TUPLE2(BIRT, TLIST (List.rev $2)) }
   | RESI lev2_lst { TUPLE2(RESI, TLIST (List.rev $2)) }
-  | FAMC AT XREF AT { FAMC }
+  | FAMC AT XREF AT { TUPLE2(FAMC, $3) }
   | DEAT lev2_lst { TUPLE2(DEAT, TLIST (List.rev $2)) }
   | BURI lev2_lst { TUPLE2(BURI, TLIST (List.rev $2)) }
   | CENS lev2_lst { TUPLE2(CENS, TLIST (List.rev $2)) }
   | OCCU lev2_lst { TUPLE2(OCCU $1, TLIST (List.rev $2)) }
-  | FAMS AT XREF AT { FAMS }
-  | SOUR AT XREF AT lev2_lst { TUPLE2(SOUR, TLIST (List.rev $5)) }
+  | FAMS AT XREF AT { TUPLE2(FAMS, $3) }
+  | SOUR AT XREF AT lev2_lst { TUPLE3(SOUR, $3, TLIST (List.rev $5)) }
   | EVEN lev2_lst { TUPLE2(EVEN, TLIST (List.rev $2)) }
   | CHR lev2_lst { TUPLE2(CHR, TLIST (List.rev $2)) }
-  | NOTE lev2_con { NOTE $1 }
+  | NOTE lev2_con { TUPLE2 (NOTE $1, TLIST (List.rev $2)) }
   | BAPM lev2_lst { TUPLE2(BAPM, TLIST (List.rev $2)) }
   | RELI lev2_lst { TUPLE2(RELI $1, TLIST (List.rev $2)) }
-  | HUSB AT XREF AT { HUSB }
-  | WIFE AT XREF AT { WIFE }
-  | CHIL AT XREF AT { CHIL }
+  | HUSB AT XREF AT { TUPLE2(HUSB, $3) }
+  | WIFE AT XREF AT { TUPLE2(WIFE, $3) }
+  | CHIL AT XREF AT { TUPLE2(CHIL, $3) }
   | MARR lev2_lst { TUPLE2(MARR, TLIST (List.rev $2)) }
   | TITL { TITL $1 }
   | PUBL { PUBL $1 }
-  | TEXT lev2_con { TEXT $1 }
+  | TEXT lev2_con { TUPLE2(TEXT $1, TLIST (List.rev $2)) }
   | AUTH { AUTH $1 }
   
 lev2_con: { [] }
@@ -400,33 +281,9 @@ num: NUM { NUM $1 }
 | LEV1 { NUM 1 }
 | LEV2 { NUM 2 }
 
-levn:
- COLON SUBM
- num3 ADDRESS_STRUCTURE
-num2 DATA NAME_OF_SOURCE_DATA
-num3 DATE PUBLICATION_DATE
-num3 COPR COPYRIGHT_SOURCE_DATA
-num4 con COPYRIGHT_SOURCE_DATA
-num1 SUBN AT XREF COLON SUBN AT 
-num1 FILE FILE_NAME
-num1 COPR COPYRIGHT_GEDCOM_FILE
-num2 VERS VERSION_NUMBER
-num1 PLAC
-num2 FORM PLACE_HIERARCHY
-num1 NOTE GEDCOM_CONTENT_DESCRIPTION
-num2 con GEDCOM_CONTENT_DESCRIPTION { (NUM $1) }
-
-NAME_OF_SOURCE_DATA: STRING { STRING $1 }
-
-COPYRIGHT_GEDCOM_FILE: STRING { STRING $1 }
+XREF: STRING { STRING $1 }
 
 NAME_OF_BUSINESS: STRING { STRING $1 }
-
-ADDRESS_STRUCTURE: STRING { STRING $1 }
-
-PLACE_HIERARCHY: STRING { STRING $1 }
-
-PUBLICATION_DATE: STRING { STRING $1 }
 
 LANGUAGE_OF_TEXT: STRING { STRING $1 }
 
@@ -434,32 +291,6 @@ RECEIVING_SYSTEM_NAME: STRING { STRING $1 }
 
 GEDCOM_FORM: STRING { STRING $1 }
 
-COPYRIGHT_SOURCE_DATA: STRING { STRING $1 }
-
-TRANSMISSION_DATE: STRING { STRING $1 }
-
 CHARACTER_SET: STRING { STRING $1 }
 
-TIME_VALUE: STRING { STRING $1 }
-
-FILE_NAME: STRING { STRING $1 }
-
-NAME_OF_PRODUCT: STRING { STRING $1 }
-
-GEDCOM_CONTENT_DESCRIPTION: STRING { STRING $1 }
-
 APPROVED_SYSTEM_ID: STRING { STRING $1 }
-
-XREF: STRING { STRING $1 }
-
-num1: NUM { NUM $1 }
-
-num2: NUM { NUM $1 }
-
-num3: NUM { NUM $1 }
-
-num4: NUM { NUM $1 }
-
-con:
-  | CONT { CONT }
-  | CONC { CONC }

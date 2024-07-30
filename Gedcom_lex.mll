@@ -238,7 +238,7 @@ rule token = parse
   | time as s
       { tok (TIME (String.sub s 5 (String.length s - 5))) }
   | underscore as s
-      { tok (let blnk = String.index s ' ' in UNDERSCORE_KW (String.sub s 1 (blnk-1), String.sub s (blnk+1) (String.length s - blnk - 2) )) }
+      { tok (let blnk = String.index s ' ' in UNDERSCORE_KW (String.sub s 1 (blnk-1), String.sub s (blnk+1) (String.length s - blnk - 1) )) }
   | space
       { token lexbuf }
   | newline

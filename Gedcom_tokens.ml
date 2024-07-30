@@ -31,11 +31,6 @@ let getstr = function
 | COLON  -> "COLON"
 | COMMA  -> "COMMA"
 | CONC s -> "CONC "^s
-| CONS1  _ -> "CONS1"
-| CONS2  _ -> "CONS2"
-| CONS3  _ -> "CONS3"
-| CONS4  _ -> "CONS4"
-| CONS5  _ -> "CONS5"
 | CONT s -> "CONT "^s
 | CORP  -> "CORP"
 | CTRY  -> "CTRY"
@@ -49,7 +44,6 @@ let getstr = function
 | DOLLAR  -> "DOLLAR"
 | DOT  -> "DOT"
 | DOUBLEQUOTE  -> "DOUBLEQUOTE"
-| ELIST  _ -> "ELIST"
 | EMAIL s -> "EMAIL "^s
 | EMPTY_TOKEN  -> "EMPTY_TOKEN"
 | END  -> "END"

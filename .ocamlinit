@@ -5,3 +5,14 @@
 
 open Gedcom
 open Gedcom_main
+open Gedcom_rewrite
+
+let husb, wife, chil = let husb = ref [] and wife = ref [] and chil = ref [] in List.iter (function
+| TUPLE3 (RIN, STRING s, STRING fam) -> ()
+| UNDERSCORE_KW ("UID", uid) -> ()
+| TUPLE2 (HUSB, STRING husb') -> husb := Hashtbl.find indih husb'
+| TUPLE2 (WIFE, STRING wife') -> wife := Hashtbl.find indih wife'
+| TUPLE2 (CHIL, STRING chil') -> chil := Hashtbl.find indih chil'
+| oth -> failwith "iter") (Hashtbl.find famh "F500001");
+!husb, !wife, !chil
+
